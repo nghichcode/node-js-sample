@@ -22,10 +22,11 @@ http.createServer(function (req, res) {
 
 		res.writeHead(200,{'Content-Type':'text/json'});
 		var correctToken =  params.username && params.password && params.client_id && params.client_secret && params.grant_type;
+		if (!req.headers['authorization']) {return;};
 		var correctRevoke =  req.headers['authorization'];
 		var correctPicking = req.headers['authorization'] && params.whCode && params.customerCode && params.pickingNo;
 
-		if (urlParams.pathname == "/oauth/token") {
+		if (urlParams.pathname == "/oauth/token" && correctToken) {
 			resContent = login.parse(params);
 		} else if (urlParams.pathname == "/oauth/revoke" && correctRevoke) {
 			resContent = logout.parse(req.headers['authorization']);
