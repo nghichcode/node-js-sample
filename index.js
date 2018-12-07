@@ -10,8 +10,7 @@ var err = false;
 http.createServer(function (req, res) {
 
 	// POST data
-	const FORM_URLENCODED = 'application/json; charset=utf-8';
-    if(req.headers['content-type'] === FORM_URLENCODED && req.method === "POST") {
+    if(req.method === "POST") {
     	var body = '';
         req.on('data', function(chunk) {body += chunk.toString();});
         req.on('end', function() {response(querystring.parse(body));});
