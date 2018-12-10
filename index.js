@@ -15,7 +15,7 @@ http.createServer(function (req, res) {
     req.on('end', function() {
 		if (req.headers['content-type'] && req.headers['content-type'] === URLE && req.method === "POST" && body!="" ) {
     		response(querystring.parse(body));
-    	} else alert("Error","Not POST || Body empty!");
+    	} else alert("Error","Not POST || Body empty!"+req.headers['content-type']+":"+req.method+":"+body);
     });
 
     function response(params) {
