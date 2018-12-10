@@ -7,19 +7,16 @@ var logout = require('./logout');
 var picking = require('./picking');
 
 http.createServer(function (req, res) {
+	// POST data Content-Type: application/x-www-form-urlencoded
+	const URLE = "application/x-www-form-urlencoded";
 
-	// POST data
-	const FORM_URLENCODED = 'application/x-www-form-urlencoded';
-
-    if(req.headers['content-type'] && req.headers['content-type'] === FORM_URLENCODED && req.method === "POST") {
-    	var body = '';
-        req.on('data', function(chunk) {body += chunk.toString();});
-        req.on('end', function() {response(querystring.parse(body));});
-    } else {
-		res.writeHead(200,{'Content-Type':'text/json'});
-		res.write('{"status": "wrongHeads","statusText":"Wrong Headers"}');
-		res.end();
-    }
+	var body = '';
+    req.on('data', function(chunk) {body += chunk.toString();});
+    req.on('end', function() {
+		if (req.headers['content-type'] && req.headers['content-type'] === URLE && req.method === "POST" && body!="" ) {
+    		response(querystring.parse(body));
+    	} else alert("Error","Not POST || Body empty!");
+    });
 
     function response(params) {
     	var resContent = {};
@@ -27,25 +24,31 @@ http.createServer(function (req, res) {
 
 		res.writeHead(200,{'Content-Type':'text/json'});
 		var correctToken =  params.username && params.password || params.client_id || params.client_secret || params.grant_type;
-		if (!req.headers['authorization']) {return;};
 		var correctRevoke =  req.headers['authorization'];
 		var correctPicking = req.headers['authorization'] && params.whCode && params.customerCode && params.pickingNo;
 
-		console.log(urlParams.pathname);
-		console.log(correctToken);
-		console.log(params);
-		if (urlParams.pathname == "/oauth/token" && correctToken) {
+		if (urlParams.pathname == "/oauth/token" && correctToken) {console.log("InP");
 			resContent = login.parse(params);
 		} else if (urlParams.pathname == "/oauth/revoke" && correctRevoke) {
 			resContent = logout.parse(req.headers['authorization']);
 		} else if (urlParams.pathname == "/api/picking/sacnSerial.json" && correctPicking) {
 			resContent = picking.parse(req.headers['authorization'], params);
 		} else {
-			resContent = {status: "wrongParams",statusText:"Wrong Parameters"};
+			if (!correctToken || !correctRevoke || !correctPicking) {
+				resContent = {status: "wrongParams",statusText:"Wrong Parameters"};
+			} else {
+				resContent = {status: "wrongPath",statusText:"Wrong Path"};
+			}
 		};
 		res.write(JSON.stringify(resContent));
 		res.end();
     }
+
+    function alert(stat, txt) {
+		res.writeHead(200,{'Content-Type':'text/json'});
+		res.write('{"status": "'+stat+'","statusText": "'+txt+'"}');
+		res.end();
+	}
 
 }).listen(process.env.PORT || 5000);
 // console.log(body);
