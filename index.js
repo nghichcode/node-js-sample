@@ -7,7 +7,7 @@ var logout = require('./logout');
 var picking = require('./picking');
 
 http.createServer(function (req, res) {
-	// POST data Content-Type: application/x-www-form-urlencoded
+	// POST data Content-Type: application/x-www-form-urlencoded; charset=utf-8
 	const URLE = "application/x-www-form-urlencoded";
 
 	var body = '';
@@ -15,7 +15,7 @@ http.createServer(function (req, res) {
     req.on('end', function() {
 		if (req.headers['content-type'] && req.headers['content-type'].search(URLE)>-1 && req.method === "POST" && body!="" ) {
     		response(querystring.parse(body));
-    	} else alert("Error","Not POST || Body empty!"+req.headers['content-type']+":"+req.method+":"+body);
+    	} else alert("Error","Not POST || Body empty || Wrong Content-Type!");
     });
 
     function response(params) {
