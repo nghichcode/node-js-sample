@@ -13,7 +13,7 @@ http.createServer(function (req, res) {
 	var body = '';
     req.on('data', function(chunk) {body += chunk.toString();});
     req.on('end', function() {
-		if (req.headers['content-type'] && req.headers['content-type'] === URLE && req.method === "POST" && body!="" ) {
+		if (req.headers['content-type'] && req.headers['content-type'].search(URLE)>-1 && req.method === "POST" && body!="" ) {
     		response(querystring.parse(body));
     	} else alert("Error","Not POST || Body empty!"+req.headers['content-type']+":"+req.method+":"+body);
     });
