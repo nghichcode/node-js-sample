@@ -34,11 +34,7 @@ http.createServer(function (req, res) {
 		} else if (urlParams.pathname == "/api/picking/sacnSerial.json" && correctPicking) {
 			resContent = picking.parse(req.headers['authorization'], params);
 		} else {
-			if (!correctToken || !correctRevoke || !correctPicking) {
-				resContent = {status: "wrongParams",statusText:"Wrong Parameters"};
-			} else {
-				resContent = {status: "wrongPath",statusText:"Wrong Path"};
-			}
+			resContent = {status: "Error",statusText:"Wrong Parameters || Path"};
 		};
 		res.write(JSON.stringify(resContent));
 		res.end();
