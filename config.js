@@ -5,19 +5,21 @@ exports.getTime = function() {
 
 	now = {status: "Error",statusText:"getTime 2"};
 	const client = new Client({
-	  connectionString: process.env.DATABASE_URL
+	  connectionString: process.env.DATABASE_URL,
+	  ssl: true
 	});
 	client.connect();
 	now = {status: "Error",statusText:"getTime 3"};
 
-	client.query('SELECT NOW()', function(err, res) {
-		console.log("query");
+	client.query('SELECT NOW();', function(err, res) {
 		if (err) {
 			now ={status: "Error",statusText:"getTime Err"} ;
 		} else {
 			now = {status: "Error",statusText:"getTime OK"};
 		}
+		client.end();
 	});
+	now = {status: "Error",statusText:"getTime 4"};
 
 	return now;
 }
