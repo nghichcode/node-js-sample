@@ -39,6 +39,7 @@ http.createServer(function (req, res) {
 			resContent = config.getTime();
 			// resContent = {status: "Error",statusText:"config"};
 		} else {
+			console.log("Eroor ok");
 			resContent = {status: "Error",statusText:"Wrong Parameters || Path"};
 		};
 		res.write(JSON.stringify(resContent));
