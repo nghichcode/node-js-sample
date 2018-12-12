@@ -8,14 +8,11 @@ exports.getTime = function() {
 	});
 	client.connect();
 
-	// client.query('SELECT NOW()', function(err, res) {
-	// 	console.log("query");
-	// 	if (err) {console.log("Err");return;}
-	//   for (let row of res.rows) {
-	//     console.log(JSON.stringify(row));
-	//   }
-	// 	now = {rk:"OK"};
-	// });
+	client.query('SELECT NOW()', function(err, res) {
+		console.log("query");
+		if (err) {console.log("Err");return;}
+		now = res;
+	});
 
 	return now;
 }
