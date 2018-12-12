@@ -10,7 +10,11 @@ exports.getTime = function() {
 	client.connect();
 
 	client.query('SELECT NOW()', function(err, res) {
-		now = {err, res};
+		if (err) throw err;
+	  for (let row of res.rows) {
+	    console.log(JSON.stringify(row));
+	  }
+		now = {rk:res};
 	});
 	return now;
 }
