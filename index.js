@@ -5,7 +5,7 @@ var querystring = require('querystring');
 var login = require('./login');
 var logout = require('./logout');
 var picking = require('./picking');
-// var config = require('./config');
+var config = require('./config');
 
 http.createServer(function (req, res) {
 	// POST data Content-Type: application/x-www-form-urlencoded; charset=utf-8
@@ -36,6 +36,7 @@ http.createServer(function (req, res) {
 			resContent = picking.parse(req.headers['authorization'], params);
 		} else if (urlParams.pathname == "/config") {
 			resContent = config.getTime();
+			console.log("Config");
 			// resContent = {status: "Error",statusText:"config"};
 		} else {
 			resContent = {status: "Error",statusText:"Wrong Parameters || Path"};
