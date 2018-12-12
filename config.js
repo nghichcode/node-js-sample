@@ -10,8 +10,8 @@ exports.getTime = function() {
 
 	client.query('SELECT NOW()', function(err, res) {
 		console.log("query");
-		if (err) {console.log("Err");return;}
-		now = res;
+		if (err) {now ={status: "Error",statusText:"getTime Err"} ;return;}
+		now = {status: "Error",statusText:"getTime OK"};
 	});
 
 	return now;
