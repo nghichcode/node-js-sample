@@ -26,7 +26,8 @@ http.createServer(function (req, res) {
 		var correctToken =  params.username && params.password || params.client_id || params.client_secret || params.grant_type;
 		var correctRevoke =  req.headers['authorization'];
 		var correctPicking = req.headers['authorization'] && params.whCode && params.customerCode && params.pickingNo;
-		var correctSet = params.host && params.port && params.path && params.version && params.user_name;
+		var correctCGet = params.user_name;
+		var correctCSet = params.host && params.port && params.path && params.version && params.user_name;
 
 		if (urlParams.pathname == "/oauth/token" && correctToken) {
 			resContent = login.parse(params);
@@ -36,9 +37,9 @@ http.createServer(function (req, res) {
 			resContent = picking.parse(req.headers['authorization'], params);
 		} else if (urlParams.pathname.search("/config") == 0 ) {
 			var config = require('./config');
-			if (urlParams.pathname.search("/get") == 7 ) {
+			if (urlParams.pathname.search("/get") == 7 && correctCGet ) {
 				config.getConfig(res);
-			} else if (urlParams.pathname.search("/set") == 7 && correctSet ) {
+			} else if (urlParams.pathname.search("/set") == 7 && correctCSet ) {
 				// host=cnasad.com&port=443&path=conf&version=1.1.2&user_name=ncteamvn
 				config.setConfig(res, params);
 			} else {console.log(correctSet); alert("Err","Err Path!");}
