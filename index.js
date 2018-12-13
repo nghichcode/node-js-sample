@@ -34,12 +34,10 @@ http.createServer(function (req, res) {
 		} else if (urlParams.pathname == "/api/picking/sacnSerial.json" && correctPicking) {
 			resContent = picking.parse(req.headers['authorization'], params);
 		} else if (urlParams.pathname == "/config") {
-			console.log("Config");
 			var config = require('./config');
-			resContent = config.getTime();
-			// resContent = {status: "Error",statusText:"config"};
+			config.getTime(res);
+			return ;
 		} else {
-			console.log("Eroor ok");
 			resContent = {status: "Error",statusText:"Wrong Parameters || Path"};
 		};
 		res.write(JSON.stringify(resContent));
