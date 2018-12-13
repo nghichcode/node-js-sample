@@ -18,7 +18,7 @@ http.createServer(function (req, res) {
     	} else alert("Error","Not POST || Body empty || Wrong Content-Type!");
     });
 
-    function response(params) {
+    function response(params) {console.log(params);
     	var resContent = {};
     	var urlParams = url.parse(req.url, true);
 
@@ -26,16 +26,22 @@ http.createServer(function (req, res) {
 		var correctToken =  params.username && params.password || params.client_id || params.client_secret || params.grant_type;
 		var correctRevoke =  req.headers['authorization'];
 		var correctPicking = req.headers['authorization'] && params.whCode && params.customerCode && params.pickingNo;
+		var correctSet = params.host && params.port && params.path && params.version && params.user_name;
 
-		if (urlParams.pathname == "/oauth/token" && correctToken) {console.log("InP");
+		if (urlParams.pathname == "/oauth/token" && correctToken) {
 			resContent = login.parse(params);
 		} else if (urlParams.pathname == "/oauth/revoke" && correctRevoke) {
 			resContent = logout.parse(req.headers['authorization']);
 		} else if (urlParams.pathname == "/api/picking/sacnSerial.json" && correctPicking) {
 			resContent = picking.parse(req.headers['authorization'], params);
-		} else if (urlParams.pathname == "/config") {
+		} else if (urlParams.pathname.search("/config") == 0 ) {
 			var config = require('./config');
-			config.getTime(res);
+			if (urlParams.pathname.search("/get") == 7 ) {
+				config.getConfig(res);
+			} else if (urlParams.pathname.search("/set") == 7 && correctSet ) {
+				// host=cnasad.com&port=443&path=conf&version=1.1.2&user_name=ncteamvn
+				config.setConfig(res, params);
+			} else {console.log(correctSet); alert("Err","Err Path!");}
 			return ;
 		} else {
 			resContent = {status: "Error",statusText:"Wrong Parameters || Path"};
