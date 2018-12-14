@@ -22,10 +22,10 @@ client.connect(function (err) {
 	if (err) {writeRes({status: "C Error", statusText: err});client.end();}
 });
 // checkEmty then getConfig
-exports.getConfig = function(clientRes) {
+exports.getConfig = function(clientRes, user_name) {
 	checkEmty(clientRes);
 
-	queryString = "SELECT id, user_name, host, port, path, version FROM config LIMIT 1;";
+	queryString = "SELECT id, user_name, host, port, path, version FROM config WHERE user_name='"+user_name+"' LIMIT 1;";
 	client.query(queryString, function (err, res) {
 		if (err) {writeRes(clientRes, err);
 		} else {
