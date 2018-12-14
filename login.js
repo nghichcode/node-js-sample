@@ -7,7 +7,7 @@ var db = [
 	{ uid: 6, ucode:"NV1316", user_name: "aba", permission: 3, permissionText:"Quyen Xuat Kho", password: "pass"},
 	{ uid: 7, ucode:"NV1317", user_name: "abb", permission: 1, permissionText:"Quan Ly Kho", password: "pass"},
 	{ uid: 8, ucode:"NV1318", user_name: "abd", permission: 2, permissionText:"Quyen Nhap Kho", password: "pass"},
-	{ uid: 9, ucode:"NV1319", user_name: "abe", permission: 3, permissionText:"Quyen Xuat Kho", password: "pass"}
+	{ uid: 9, ucode:"NV1319", user_name: "ncteamvn", permission: 3, permissionText:"Quyen Xuat Kho", password: "pass"}
 ];
 
 var response = {
