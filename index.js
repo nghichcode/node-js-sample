@@ -38,6 +38,7 @@ http.createServer(function (req, res) {
 		} else if (urlParams.pathname.search("/config") == 0 ) {
 			var config = require('./config');
 			if (urlParams.pathname.search("/get") == 7 && correctCGet ) {
+				// user_name=ncteamvn
 				config.getConfig(res, params.user_name);
 			} else if (urlParams.pathname.search("/set") == 7 && correctCSet ) {
 				// host=cnasad.com&port=443&path=conf&version=1.1.2&user_name=ncteamvn
