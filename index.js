@@ -7,6 +7,12 @@ var logout = require('./logout');
 var picking = require('./picking');
 
 http.createServer(function (req, res) {
+	if (req.url.search("/qr") == 0 ) {
+		var jsq = require('./qrdecode');
+		jsq.parse(req, res);
+		return;
+	}
+
 	// POST data Content-Type: application/x-www-form-urlencoded; charset=utf-8
 	const URLE = "application/x-www-form-urlencoded";
 
@@ -43,7 +49,7 @@ http.createServer(function (req, res) {
 			} else if (urlParams.pathname.search("/set") == 7 && correctCSet ) {
 				// host=cnasad.com&port=443&path=conf&version=1.1.2&user_name=ncteamvn
 				config.setConfig(res, params);
-			} else {console.log(correctSet); alert("Err","Err Path!");}
+			} else { alert("Err","Err Path!");}
 			return ;
 		} else {
 			resContent = {status: "Error",statusText:"Wrong Parameters || Path"};
@@ -53,8 +59,8 @@ http.createServer(function (req, res) {
     }
 
     function alert(stat, txt) {
-		res.writeHead(200,{'Content-Type':'text/json'});
-		res.write('{"status": "'+stat+'","statusText": "'+txt+'"}');
+		res.writeHead(200,{'Content-Type':'text/json; charset=utf-8'});
+		res.write(JSON.stringify({status:stat, txt:txt}));
 		res.end();
 	}
 
