@@ -10,6 +10,23 @@ document.body.appendChild(img);
   <script>
     $(document).ready(function() {
       $("#upload").click(function() {
+        if( $('#urlqr').val().search("http") == 0 ){
+          $.ajax({
+            url:"/qr/url/"+$('#urlqr').val(),
+            method:"get",
+            timeout: 6000,
+            success: function(su) {
+              var fpath="/qr/upload_"+su.txt;
+              $("#result").append("<p>"+JSON.stringify(su)+"</p>");
+              if (su.status=='ok') {readBySrc(fpath);}
+              else {console.log("S Err");}
+            },
+            error: function(err) {console.log("E: "+err.statusText);}
+          });
+          return;
+        }
+        if( $('#urlqr').val() != "" ){return;}
+
         var form = document.getElementById("form");
         var fdata = new FormData(form);
         $.ajax({
@@ -88,8 +105,8 @@ document.body.appendChild(img);
 <body>
   <!-- action="/qr/decode" -->
   <form method="POST" id="form" name="form" enctype="multipart/form-data">
-    <input type="file" name="fileqr" value="Import" /><br>
-    <input type="url" name="urlqr" placeholder="Enter url" /><br>
+    <input type="url" id="urlqr" name="urlqr" placeholder="Enter url" /> Or
+    <input type="file" name="fileqr" value="Import" /><br/><br/>
     <input type="button" id="upload" value="Upload now!" />
   </form>
   <div id="qr">
