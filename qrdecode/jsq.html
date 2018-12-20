@@ -1,0 +1,96 @@
+<!-- var img = new Image();
+img.src = "";
+document.body.appendChild(img);
+ -->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.4/dist/jsQR.min.js"></script>
+  <script src="./qr/jquery-3.3.1.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $("#upload").click(function() {
+        var form = document.getElementById("form");
+        var fdata = new FormData(form);
+        $.ajax({
+          url:"/qr/decode",
+          method:"post",
+          data:fdata,
+          cache: false,
+          contentType: false,
+          processData: false,
+          timeout: 60000,
+          success: function(su) {
+            var fpath="/qr/"+su.txt;
+            if (su.status=='ok') {console.log("S Ok");readBySrc(fpath);}
+            else {console.log("S Err");}
+          },
+          error: function(err) {console.log("E: "+err.statusText);}
+        });
+      });
+    });
+
+    var w = 700;
+    var glob;
+    function readBySrc(src) {
+      document.getElementById("qr").innerHTML="";
+      var canvas = document.createElement("canvas");
+      document.getElementById("qr").appendChild(canvas);
+      var ctx = canvas.getContext("2d");
+      var img = new Image();
+      img.src = src;
+      img.onload = function () {
+        if (img.width > w || img.height > w) {
+          if (img.width > img.height) {
+            canvas.width = w;
+            canvas.height = (w * img.height) / img.width;
+          } else if (img.width < img.height) {
+            canvas.width = (w * img.width) / img.height;
+            canvas.height = w;
+          } else {
+            canvas.width = w;
+            canvas.height = w;
+          }
+        } else {
+          canvas.width = img.width;
+          canvas.height = img.height;
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        var data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var res = jsQR(data.data, canvas.width, canvas.height);
+        if (res) { glob=res; console.log(res);
+          console.log(JSON.stringify({
+            error: false,
+            message: res.data,
+            src: src
+          }));
+        } else {
+          console.log(JSON.stringify({
+            error: true,
+            message: "error decoding QR Code",
+            src: src
+          }));
+        }
+      }
+      img.onerror = function () {
+        console.log(JSON.stringify({
+          error: true,
+          message: "Failed to load the image",
+          src: src
+        }))
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- action="/qr/decode" -->
+  <form method="POST" id="form" name="form" enctype="multipart/form-data">
+    <input type="file" name="fileqr" value="Import" /><br>
+    <input type="url" name="urlqr" placeholder="Enter url" /><br>
+    <input type="button" id="upload" value="Upload now!" />
+  </form>
+  <div id="qr">
+  </div>
+
+</body>
+</html>
