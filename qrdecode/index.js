@@ -1,13 +1,25 @@
 var fs = require('fs');
 var formidable = require('formidable');
 
+var http = require("http");
+
 var qrdir = "./qrdecode/";
 var tmpdir = qrdir+"tmp";
 
 exports.parse = function (req, res) {
-	// qr/upload_ || qr/img.png: search(/(qr\/)(upload_(.)*|(\w)+\.(jpg|png)$)/)
 	console.log(req.url);
-	if (req.url.search(/(qr\/)(upload_(.)*|(\w)+\.(jpg|png)$)/) == 1 ) {
+
+	if (req.url.search("/qr/url") == 0 ) {
+		var hturl = req.url.replace("/qr/url/","")
+		var file = fs.createWriteStream(tmpdir+"/upload_ADSSVCX");
+
+		http.get(hturl, function(gres){
+			if (gres.statusCode !== 200) {jwarn('err','get err!');return;}
+			gres.pipe(file);
+			gres.on('end',function() { jwarn('ok','ADSSVCX'); });
+		});
+	// qr/upload_ || qr/img.png: search(/(qr\/)(upload_(.)*|(\w)+\.(jpg|png)$)/)
+	} else if (req.url.search(/(qr\/)(upload_(.)*|(\w)+\.(jpg|png)$)/) == 1 ) {
 		// var tmpdir = "C:\\Documents and Settings\\install\\Local Settings\\Temp";
 		fs.readFile(tmpdir+req.url.replace("\/qr",""), function (err, data) {
 			if (err) {warn("Not Found!");return;}
