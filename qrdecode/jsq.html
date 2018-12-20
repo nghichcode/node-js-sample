@@ -22,7 +22,8 @@ document.body.appendChild(img);
           timeout: 60000,
           success: function(su) {
             var fpath="/qr/"+su.txt;
-            if (su.status=='ok') {console.log("S Ok");readBySrc(fpath);}
+            $("#result").append("<p>"+su+"</p>");
+            if (su.status=='ok') {readBySrc(fpath);}
             else {console.log("S Err");}
           },
           error: function(err) {console.log("E: "+err.statusText);}
@@ -31,7 +32,6 @@ document.body.appendChild(img);
     });
 
     var w = 700;
-    var glob;
     function readBySrc(src) {
       document.getElementById("qr").innerHTML="";
       var canvas = document.createElement("canvas");
@@ -58,26 +58,29 @@ document.body.appendChild(img);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         var data = ctx.getImageData(0, 0, canvas.width, canvas.height);
         var res = jsQR(data.data, canvas.width, canvas.height);
-        if (res) { glob=res; console.log(res);
-          console.log(JSON.stringify({
+        if (res) { console.log(res);
+          var resq = JSON.stringify({
             error: false,
             message: res.data,
             src: src
-          }));
+          });
+          $("#result").append("<p>"+resq+"</p>");
         } else {
-          console.log(JSON.stringify({
+          var resq = JSON.stringify({
             error: true,
             message: "error decoding QR Code",
             src: src
-          }));
+          });
+          $("#result").append("<p>"+resq+"</p>");
         }
       }
       img.onerror = function () {
-        console.log(JSON.stringify({
+        var resq = JSON.stringify({
           error: true,
           message: "Failed to load the image",
           src: src
-        }))
+        });
+        $("#result").append("<p>"+resq+"</p>");
       }
     }
   </script>
@@ -90,6 +93,8 @@ document.body.appendChild(img);
     <input type="button" id="upload" value="Upload now!" />
   </form>
   <div id="qr">
+  </div>
+  <div id="result">
   </div>
 
 </body>
