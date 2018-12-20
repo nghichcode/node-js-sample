@@ -49,9 +49,9 @@ exports.parse = function (req, res) {
 		form.uploadDir = tmpdir;
 		form.parse(req, function (err, fields, files) {
 			if (err || files.fileqr==undefined) {jwarn('error',"parse || upload failed!"); return;}
-			var opath=files.fileqr.path ;
+			var opath=files.fileqr.path.replace("qrdecode\\tmp\\","");
 			console.log(opath);
-			jwarn('ok',opath.replace("qrdecode\\tmp\\",""));
+			jwarn('ok',opath);
 		});
 	}
 	function warn(s) {
