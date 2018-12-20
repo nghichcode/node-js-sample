@@ -22,7 +22,7 @@ document.body.appendChild(img);
           timeout: 60000,
           success: function(su) {
             var fpath="/qr/"+su.txt;
-            $("#result").append("<p>"+su+"</p>");
+            $("#result").append("<p>"+JSON.stringify(su)+"</p>");
             if (su.status=='ok') {readBySrc(fpath);}
             else {console.log("S Err");}
           },
