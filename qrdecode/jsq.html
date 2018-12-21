@@ -5,8 +5,11 @@ document.body.appendChild(img);
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.4/dist/jsQR.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="./qr/jquery-3.3.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script>
     $(document).ready(function() {
       $("#upload").click(function() {
@@ -16,7 +19,7 @@ document.body.appendChild(img);
             method:"get",
             timeout: 6000,
             success: function(su) {
-              var fpath="/qr/upload_"+su.txt;
+              var fpath="/qr/"+su.txt;
               $("#result").append("<p>"+JSON.stringify(su)+"</p>");
               if (su.status=='ok') {readBySrc(fpath);}
               else {console.log("S Err");}
@@ -103,15 +106,27 @@ document.body.appendChild(img);
   </script>
 </head>
 <body>
-  <!-- action="/qr/decode" -->
+  <style type="text/css">
+  #urlqr {border: 1px solid wheat;border-radius: 3px;}
+  #fileqr {display: none;}
+  .container {margin-top: 10px;}
+  </style>
   <form method="POST" id="form" name="form" enctype="multipart/form-data">
-    <input type="url" id="urlqr" name="urlqr" placeholder="Enter url" /> Or
-    <input type="file" name="fileqr" value="Import" /><br/><br/>
-    <input type="button" id="upload" value="Upload now!" />
+    <div class="container">
+      <div style="width: 100%;">
+        <input type="url" id="urlqr" name="urlqr" placeholder="Enter url" /> Or
+        <label id="lfileqr" class="btn btn-success btn-sm">
+          <input type="file" id="fileqr" name="fileqr" value="Import" />Select File
+        </label><br/>
+      </div>
+      <div style="width: 100%;">
+        <input type="button" id="upload" class="btn btn-danger btn-sm" value="Upload now!" />
+      </div>
+    </div>
   </form>
-  <div id="qr">
+  <div id="qr" class="container">
   </div>
-  <div id="result">
+  <div id="result" style="overflow-wrap: break-word;" class="container">
   </div>
 
 </body>
