@@ -8,7 +8,7 @@ exports.parse = function (req, res) {
 	console.log(req.url);
 
 	if (req.url.search("/qr/url") == 0 ) {
-		var hturl = req.url.substring(8);
+		var hturl = req.url.substring(8);console.log(hturl);
 		var file = fs.createWriteStream(tmpdir+"/upload_ADSSVCX");
 
 		if (hturl.search("https") == 0) {
@@ -38,7 +38,6 @@ exports.parse = function (req, res) {
 	    		if (err) {console.log("Unlink E!");}
 			    res.end();
 	    	});
-
 		});
 	} else if (req.url == "/qr/decode") {// qr/decode
 		// Check File!
