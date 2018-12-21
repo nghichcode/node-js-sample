@@ -1,8 +1,6 @@
 var fs = require('fs');
 var formidable = require('formidable');
 
-var http = require("http");
-
 var qrdir = "./qrdecode/";
 var tmpdir = qrdir+"tmp";
 
@@ -13,11 +11,21 @@ exports.parse = function (req, res) {
 		var hturl = req.url.substring(8);
 		var file = fs.createWriteStream(tmpdir+"/upload_ADSSVCX");
 
-		http.get(hturl, function(gres){
-			if (gres.statusCode !== 200) {jwarn('err','get err!');return;}
-			gres.pipe(file);
-			gres.on('end',function() { jwarn('ok','upload_ADSSVCX'); });
-		});
+		if (hturl.search("https") == 0) {
+			var https = require("https");
+			https.get(hturl, function(gres){
+				if (gres.statusCode !== 200) {jwarn('err','get err!');return;}
+				gres.pipe(file);
+				gres.on('end',function() { jwarn('ok','upload_ADSSVCX'); });
+			});
+		} else {
+			var http = require("http");
+			http.get(hturl, function(gres){
+				if (gres.statusCode !== 200) {jwarn('err','get err!');return;}
+				gres.pipe(file);
+				gres.on('end',function() { jwarn('ok','upload_ADSSVCX'); });
+			});
+		}
 	// qr/upload_ || qr/img.png: search(/(qr\/)(upload_(.)*|(\w)+\.(jpg|png)$)/)
 	} else if (req.url.search(/(qr\/)(upload_(.)*|(\w)+\.(jpg|png)$)/) == 1 ) {
 		// var tmpdir = "C:\\Documents and Settings\\install\\Local Settings\\Temp";
