@@ -110,6 +110,7 @@ document.body.appendChild(img);
   #urlqr {border: 1px solid wheat;border-radius: 3px;}
   #fileqr {display: none;}
   .container {margin-top: 10px;}
+  #qr {width: 100%;}
   </style>
   <form method="POST" id="form" name="form" enctype="multipart/form-data">
     <div class="container">
@@ -119,7 +120,7 @@ document.body.appendChild(img);
           <input type="file" id="fileqr" name="fileqr" value="Import" />Select File
         </label><br/>
       </div>
-      <div style="width: 100%;">
+      <div style="width: 100%;margin-top: 6px;">
         <input type="button" id="upload" class="btn btn-danger btn-sm" value="Upload now!" />
       </div>
     </div>
