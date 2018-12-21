@@ -1,87 +1,134 @@
-var fs = require('fs');
-var formidable = require('formidable');
+<!-- var img = new Image();
+img.src = "";
+document.body.appendChild(img);
+ -->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.4/dist/jsQR.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="./qr/jquery-3.3.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $("#upload").click(function() {
+        if( $('#urlqr').val().search("http") == 0 ){
+          $.ajax({
+            url:"/qr/url/"+$('#urlqr').val(),
+            method:"get",
+            timeout: 6000,
+            success: function(su) {
+              var fpath="/qr/"+su.txt;
+              $("#result").append("<p>"+JSON.stringify(su)+"</p>");
+              if (su.status=='ok') {readBySrc(fpath);}
+              else {console.log("S Err");}
+            },
+            error: function(err) {console.log("E: "+err.statusText);}
+          });
+          return;
+        }
+        if( $('#urlqr').val() != "" ){return;}
 
-var qrdir = "./qrdecode/";
-var tmpdir = qrdir+"tmp";
+        var form = document.getElementById("form");
+        var fdata = new FormData(form);
+        $.ajax({
+          url:"/qr/decode",
+          method:"post",
+          data:fdata,
+          cache: false,
+          contentType: false,
+          processData: false,
+          timeout: 6000,
+          success: function(su) {
+            var fpath="/qr/"+su.txt;
+            $("#result").append("<p>"+JSON.stringify(su)+"</p>");
+            if (su.status=='ok') {readBySrc(fpath);}
+            else {console.log("S Err");}
+          },
+          error: function(err) {console.log("E: "+err.statusText);}
+        });
+      });
+    });
 
-exports.parse = function (req, res) {
-	console.log(req.url);
+    var w = 700;
+    function readBySrc(src) {
+      document.getElementById("qr").innerHTML="";
+      var canvas = document.createElement("canvas");
+      document.getElementById("qr").appendChild(canvas);
+      var ctx = canvas.getContext("2d");
+      var img = new Image();
+      img.src = src;
+      img.onload = function () {
+        if (img.width > w || img.height > w) {
+          if (img.width > img.height) {
+            canvas.width = w;
+            canvas.height = (w * img.height) / img.width;
+          } else if (img.width < img.height) {
+            canvas.width = (w * img.width) / img.height;
+            canvas.height = w;
+          } else {
+            canvas.width = w;
+            canvas.height = w;
+          }
+        } else {
+          canvas.width = img.width;
+          canvas.height = img.height;
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        var data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var res = jsQR(data.data, canvas.width, canvas.height);
+        if (res) { console.log(res);
+          var resq = JSON.stringify({
+            error: false,
+            message: res.data,
+            src: src
+          });
+          $("#result").append("<p>"+resq+"</p>");
+        } else {
+          var resq = JSON.stringify({
+            error: true,
+            message: "error decoding QR Code",
+            src: src
+          });
+          $("#result").append("<p>"+resq+"</p>");
+        }
+      }
+      img.onerror = function () {
+        var resq = JSON.stringify({
+          error: true,
+          message: "Failed to load the image",
+          src: src
+        });
+        $("#result").append("<p>"+resq+"</p>");
+      }
+    }
+  </script>
+</head>
+<body>
+  <style type="text/css">
+  #urlqr {border: 1px solid wheat;border-radius: 3px;}
+  #fileqr {display: none;}
+  .container {margin-top: 10px;}
+  #qr {width: 100%;}
+  </style>
+  <form method="POST" id="form" name="form" enctype="multipart/form-data">
+    <div class="container">
+      <div style="width: 100%;">
+        <input type="url" id="urlqr" name="urlqr" placeholder="Enter url" /> Or
+        <label id="lfileqr" class="btn btn-success btn-sm">
+          <input type="file" id="fileqr" name="fileqr" value="Import" />Select File
+        </label><br/>
+      </div>
+      <div style="width: 100%;margin-top: 6px;">
+        <input type="button" id="upload" class="btn btn-danger btn-sm" value="Upload now!" />
+      </div>
+    </div>
+  </form>
+  <div id="qr" class="container">
+  </div>
+  <div id="result" style="overflow-wrap: break-word;" class="container">
+  </div>
 
-	if (req.url.search("/qr/url") == 0 ) {
-		var hturl = req.url.substring(8);
-		var file = fs.createWriteStream(tmpdir+"/upload_ADSSVCX");
-
-		if (hturl.search("https") == 0) {
-			var https = require("https");
-			https.get(hturl, function(gres){
-				if (gres.statusCode !== 200) {jwarn('err','get err!');return;}
-				gres.pipe(file);
-				gres.on('end',function() { jwarn('ok','upload_ADSSVCX'); });
-			});
-		} else {
-			var http = require("http");
-			http.get(hturl, function(gres){
-				if (gres.statusCode !== 200) {jwarn('err','get err!');return;}
-				gres.pipe(file);
-				gres.on('end',function() { jwarn('ok','upload_ADSSVCX'); });
-			});
-		}
-	// qr/upload_ || qr/img.png: search(/(qr\/)(upload_(.)*|(\w)+\.(jpg|png)$)/)
-	} else if (req.url.search(/(qr\/)(upload_(.)*|(\w)+\.(jpg|png)$)/) == 1 ) {
-		// var tmpdir = "C:\\Documents and Settings\\install\\Local Settings\\Temp";
-		fs.readFile(tmpdir+req.url.substring(3), function (err, data) {
-			if (err) {warn("Not Found!");return;}
-		    res.writeHead(200, {'Content-Type': 'image/jpg'});
-		    res.write(data);
-
-        	fs.unlink(tmpdir+req.url.substring(3),function(err) {
-	    		if (err) {console.log("Unlink E!");}
-			    res.end();
-	    	});
-
-		});
-	} else if (req.url == "/qr/decode") {// qr/decode
-		// Check File!
-		fs.stat(tmpdir,function(err,stats) {
-			if (err) {
-				fs.mkdir(tmpdir,function () { upfile(); });
-			} else { upfile(); }
-		});
-
-	} else if (req.url.search(/(jquery-3.3.1.min.js)$/) >= 0 ) {// qr jquery
-		fs.readFile(qrdir+'jquery-3.3.1.min.js', function (err, data) {
-			if (err) {warn("Not Found!");return;}
-		    res.writeHead(200, {'Content-Type':"application/javascript; charset=utf-8"});
-		    res.write(data);
-		    res.end();
-		});
-	} else {// qr/home
-		fs.readFile(qrdir+'jsq.html', function (err, data) {
-			if (err) {warn("Not Found!");return;}
-		    res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
-		    res.write(data);
-		    res.end();
-		});
-	}
-
-	function upfile() {
-		var form=new formidable.IncomingForm();
-		form.uploadDir = tmpdir;
-		form.parse(req, function (err, fields, files) {
-			if (err || files.fileqr==undefined) {jwarn('error',"parse || upload failed!"); return;}
-			console.log("file path::::"+files.fileqr.path);
-			var opath=files.fileqr.path.substring(13);
-			jwarn('ok',opath);
-		});
-	}
-	function warn(s) {
-	    res.writeHead(200, {'Content-Type': 'text/html'});
-	    res.write("<h1>Warning : "+s+"</h1>");
-	    res.end();
-	}
-	function jwarn(s,p) {
-	    res.writeHead(200, {'Content-Type': 'text/json; charset=utf-8'});
-	    res.write(JSON.stringify({status:s, txt:p}));
-	    res.end();
-	}
-};
+</body>
+</html>
